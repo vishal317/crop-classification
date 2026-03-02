@@ -1,0 +1,21 @@
+.form-field-wrapper {
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.field-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 950;
+    color: #000;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+}
+
+.field-error {
+    color: #dc2626;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}

@@ -1,0 +1,84 @@
+.field-map-wrapper {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.map-context-box {
+    border: 6px solid #000;
+    /* Extra bold per wireframe */
+    height: 320px;
+    background-color: #f3f4f6;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .map-context-box {
+        height: 300px;
+        border-width: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-context-box {
+        height: 240px;
+    }
+}
+
+.gps-status-tab {
+    display: inline-block;
+    background-color: #000;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.active-map-box .gps-status-tab {
+    top: 50px;
+    /* Move to top if map is active */
+    transform: translateX(-50%);
+}
+
+.map-placeholder-box {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(45deg,
+            #fff,
+            #fff 15px,
+            #e5e7eb 15px,
+            #e5e7eb 30px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.instruction-box {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #000;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8125rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: center;
+    max-width: 320px;
+    z-index: 10;
+}
+
+.active-map-box {
+    width: 100%;
+    height: 100%;
+}
+
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    background: #f3f4f6;
+}

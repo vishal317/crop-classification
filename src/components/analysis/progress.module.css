@@ -1,0 +1,223 @@
+.analysisProgress {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.headerSection {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.processId {
+    display: inline-block;
+    border: 1px solid #000;
+    padding: 0.25rem 0.75rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+}
+
+.metadataBlock {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    color: #555;
+    border-left: 1px solid #000;
+    padding-left: 1.5rem;
+    text-align: left;
+}
+
+.progressCard {
+    border: 1px solid #000;
+    padding: 2rem;
+    background: #fff;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.cardTitle {
+    margin: 0;
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.cardSubtitle {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+}
+
+.percentage {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.progressBarTrack {
+    height: 32px;
+    background: #f0f0f0;
+    border: 1px solid #000;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progressBarFill {
+    height: 100%;
+    background: #000;
+    transition: width 1.5s linear;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loadingText {
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 0.3em;
+    white-space: nowrap;
+}
+
+.etaBlock {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #444;
+}
+
+.timeline {
+    margin-top: 2rem;
+    border-top: 1px solid #ccc;
+    padding-top: 2rem;
+}
+
+.stepItem {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.statusIndicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 24px;
+}
+
+.statusIcon {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+.statusIcon.completed {
+    background: #000;
+    color: #fff;
+}
+
+.statusIcon.active {
+    background: #fff;
+}
+
+.activeDot {
+    width: 6px;
+    height: 6px;
+    background: #000;
+}
+
+.connector {
+    width: 1px;
+    background: #000;
+    flex-grow: 1;
+    margin-top: 0.5rem;
+}
+
+.connector.pending {
+    border-left: 1px dashed #999;
+    background: transparent;
+}
+
+.stepContent h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.stepContent p {
+    margin: 0.2rem 0 0 0;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.systemNoteCard {
+    border: 1px solid #000;
+    background: #f5f5f5;
+    padding: 1rem 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.noteContent h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 900;
+}
+
+.noteContent p {
+    margin: 0.2rem 0 0 0;
+    font-size: 0.75rem;
+    color: #555;
+}
+
+/* Responsive Rules */
+@media (max-width: 768px) {
+    .metadataBlock {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 2rem;
+    }
+
+    .percentage {
+        font-size: 2.5rem;
+    }
+
+    .analysisProgress {
+        padding: 1rem;
+    }
+}

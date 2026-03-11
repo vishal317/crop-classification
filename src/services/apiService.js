@@ -1,63 +1,66 @@
 import { APP_CONFIG } from '../config/appConfig';
+import { API_ENDPOINTS } from '../config/apiEndpoints';
 
 const apiService = {
     get: async (endpoint, params = {}) => {
-        const url = new URL(`${APP_CONFIG.API_BASE_URL}${endpoint}`);
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-
-        const response = await fetch(url.toString());
-        if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-        return response.json();
+        if (endpoint.startsWith('http')) {
+            try {
+                const response = await fetch(endpoint);
+                return await response.json();
+            } catch (error) {
+                console.error("API fetch error:", error);
+                throw error;
+            }
+        }
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if (endpoint === API_ENDPOINTS.FETCH_FIELD_PROFILE) {
+                    resolve({
+                        soilTypes: ["Sandy", "Clay", "Loamy"],
+                        coordinates: [34.0522, -118.2437],
+                        boundaryPolygon: [
+                            [34.0522, -118.2437],
+                            [34.0532, -118.2437],
+                            [34.0532, -118.2427],
+                            [34.0522, -118.2427]
+                        ]
+                    });
+                } else {
+                    resolve({});
+                }
+            }, 500);
+        });
     },
 
     post: async (endpoint, data, isMultipart = false) => {
-        const url = `${APP_CONFIG.API_BASE_URL}${endpoint}`;
-        const options = {
-            method: 'POST',
-            body: isMultipart ? data : JSON.stringify(data),
-            headers: isMultipart ? {} : { 'Content-Type': 'application/json' }
-        };
-
-        const response = await fetch(url, options);
-        if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-        return response.json();
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if (endpoint === API_ENDPOINTS.START_ANALYSIS) {
+                    resolve({ processId: `PROC-${Math.floor(Math.random() * 10000)}` });
+                } else {
+                    resolve({ success: true });
+                }
+            }, 500);
+        });
     },
 
     uploadWithProgress: (endpoint, file, onProgress) => {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            const url = `${APP_CONFIG.API_BASE_URL}${endpoint}`;
-
-            xhr.open('POST', url);
-
-            xhr.upload.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const percent = Math.round((event.loaded / event.total) * 100);
-                    onProgress(percent);
+        return new Promise((resolve) => {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                onProgress(progress);
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    resolve({
+                        fileId: `FILE-${Math.floor(Math.random() * 10000)}`,
+                        previewUrl: URL.createObjectURL(file)
+                    });
                 }
-            };
+            }, 200);
 
-            xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    try {
-                        resolve(JSON.parse(xhr.responseText));
-                    } catch (e) {
-                        resolve(xhr.responseText);
-                    }
-                } else {
-                    reject(new Error(`Upload failed with status ${xhr.status}`));
-                }
-            };
-
-            xhr.onerror = () => reject(new Error('Network error'));
-            xhr.onabort = () => reject(new Error('Upload cancelled'));
-
-            const formData = new FormData();
-            formData.append('file', file);
-            xhr.send(formData);
-
-            // Return cancel function
-            return () => xhr.abort();
+            // Return mock cancel function
+            return () => clearInterval(interval);
         });
     }
 };

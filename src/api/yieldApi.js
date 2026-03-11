@@ -1,12 +1,32 @@
-import { API_ENDPOINTS } from "./endpoints";
+import apiService from "../services/apiService";
+import { API_ENDPOINTS } from "../config/apiEndpoints";
+import { processCropFeatures } from "../utils/cropDataProcessor";
 
-export const fetchYieldResults = async (sectorId) => {
+/**
+ * Fetches all identified crops from ArcGIS and groups them.
+ */
+export const fetchIdentifiedCrops = async () => {
+    try {
+        const response = await apiService.get(API_ENDPOINTS.ARCGIS_QUERY);
+        return processCropFeatures(response.features);
+    } catch (error) {
+        console.error("Error fetching identified crops:", error);
+        throw error;
+    }
+};
+
+/**
+ * Fetches yield results for a specific crop.
+ * @param {string} cropName - The name of the crop selected by the user.
+ * @param {string} sectorId - The sector identifier.
+ */
+export const fetchYieldResults = async (cropName, sectorId = "A-12") => {
     // Simulating API call with mock data as per contract
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve({
-                crop: "CORN (MAIZE)",
-                variety: "HYBRID VARIETY Z-90",
+                crop: cropName?.toUpperCase() || "CORN (MAIZE)",
+                variety: `HYBRID VARIETY ${cropName === 'Alfalfa' ? 'A-42' : 'Z-90'}`,
                 health: 88,
                 healthDelta: 2,
                 yieldGap: 12,
@@ -27,7 +47,7 @@ export const fetchYieldResults = async (sectorId) => {
                 recommendations: [
                     {
                         title: "IRRIGATION",
-                        description: "NORTHEAST CORNER SHOWS EARLY SIGNS OF WATER STRESS.",
+                        description: `NORTHEAST CORNER OF ${cropName?.toUpperCase()} FIELD SHOWS EARLY SIGNS OF WATER STRESS.`,
                         icon: "Droplets",
                         highlighted: false
                     },
@@ -45,13 +65,14 @@ export const fetchYieldResults = async (sectorId) => {
                     },
                     {
                         title: "MARKET TREND",
-                        description: "CORN FUTURES TRENDING UP +1.2% THIS WEEK.",
+                        description: `${cropName?.toUpperCase()} FUTURES TRENDING UP +1.2% THIS WEEK.`,
                         icon: "FileText",
                         highlighted: false
                     }
                 ],
                 sectorId: sectorId || "A-12"
             });
-        }, 1000);
+        }, 800);
     });
 };
+

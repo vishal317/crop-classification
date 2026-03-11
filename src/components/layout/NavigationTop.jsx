@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, Image, Search } from 'lucide-react';
 import './NavigationTop.css';
 
@@ -9,17 +10,17 @@ const NavigationTop = ({ onToggleSidebar }) => {
                 <button className="sidebar-toggle" onClick={onToggleSidebar} aria-label="Toggle Sidebar">
                     <Menu size={24} strokeWidth={3} />
                 </button>
-                <a href="/" className="brand-lofi">
+                <Link to="/" className="brand-lofi">
                     <span className="brand-icon">
                         <Image size={24} strokeWidth={3} />
                     </span>
                     <span className="brand-text">AGRIWIREFRAME</span>
-                </a>
+                </Link>
                 <div className="nav-links">
-                    <a href="#" className="nav-link">DASHBOARD</a>
-                    <a href="#" className="nav-link active">ANALYSIS</a>
-                    <a href="#" className="nav-link">ORDERS</a>
-                    <a href="#" className="nav-link">HISTORY</a>
+                    <Link to="/analysis" className="nav-link">DASHBOARD</Link>
+                    <Link to="/analysis" className="nav-link active">ANALYSIS</Link>
+                    <Link to="/result" className="nav-link">ORDERS</Link>
+                    <Link to="/progress" className="nav-link">HISTORY</Link>
                 </div>
             </div>
             <div className="nav-top-right">

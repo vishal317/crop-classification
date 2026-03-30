@@ -31,8 +31,8 @@ const CropAnalysisPage = () => {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [toast, setToast] = useState(null);
 
-    const handleFileSelect = (file) => {
-        uploadFile(file);
+    const handleFileSelect = (files) => {
+        uploadFile(files);
     };
 
     const handleStartAnalysis = async () => {
@@ -41,7 +41,7 @@ const CropAnalysisPage = () => {
         setIsAnalyzing(true);
         try {
             const payload = {
-                fileId: uploadState.fileId,
+                fileIds: uploadState.fileIds,
                 targetYield: parseFloat(formData.targetYield),
                 locationId: formData.locationId,
                 soilCategory: formData.soilCategory,
@@ -106,7 +106,7 @@ const CropAnalysisPage = () => {
                         onCancel={cancelUpload}
                     />
 
-                    <ImagePreview imageUrl={uploadState.previewUrl} />
+                    <ImagePreview imageUrls={uploadState.previewUrls} />
                 </div>
 
                 {/* Section 2: Input Data */}

@@ -5,67 +5,89 @@ import { APP_CONFIG } from '../config/appConfig';
 
 const useFileUpload = () => {
     const [uploadState, setUploadState] = useState({
-        file: null,
+        files: [],
         progress: 0,
         status: 'idle',
-        fileId: null,
-        previewUrl: null,
+        fileIds: [],
+        previewUrls: [],
         errorMessage: null
     });
 
-    const cancelRef = useRef(null);
+    const abortControllerRef = useRef(null);
 
     const reset = useCallback(() => {
-        if (cancelRef.current) cancelRef.current();
+        if (abortControllerRef.current) abortControllerRef.current.abort();
         setUploadState({
-            file: null,
+            files: [],
             progress: 0,
             status: 'idle',
-            fileId: null,
-            previewUrl: null,
+            fileIds: [],
+            previewUrls: [],
             errorMessage: null
         });
     }, []);
 
-    const uploadFile = useCallback(async (file) => {
-        // Validation
-        if (file.size > APP_CONFIG.MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
-            setUploadState(prev => ({ ...prev, errorMessage: `File size exceeds ${APP_CONFIG.MAX_UPLOAD_SIZE_MB}MB limit.`, status: 'error' }));
-            return;
+    const uploadFile = useCallback(async (selectedFiles) => {
+        // Validation per file
+        for (let file of selectedFiles) {
+            if (file.size > APP_CONFIG.MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
+                setUploadState(prev => ({ ...prev, errorMessage: `File ${file.name} size exceeds ${APP_CONFIG.MAX_UPLOAD_SIZE_MB}MB limit.`, status: 'error' }));
+                return;
+            }
+
+            const isTif = file.name.toLowerCase().endsWith('.tif') || file.name.toLowerCase().endsWith('.tiff') || file.name.toLowerCase().includes('hls.');
+            if (!APP_CONFIG.ALLOWED_FILE_TYPES.includes(file.type) && !isTif && !file.name.toLowerCase().match(/\.b[0-9a-z]{2}$/)) {
+                setUploadState(prev => ({ ...prev, errorMessage: `Unsupported file type for ${file.name}.`, status: 'error' }));
+                return;
+            }
         }
 
-        if (!APP_CONFIG.ALLOWED_FILE_TYPES.includes(file.type)) {
-            setUploadState(prev => ({ ...prev, errorMessage: "Unsupported file type. Please use JPEG, PNG, or TIFF.", status: 'error' }));
-            return;
-        }
+        // Memory optimization: Don't read large TIFs into memory for previews
+        const previewUrls = selectedFiles.map(file => {
+            const isTif = file.name.toLowerCase().endsWith('.tif') || file.name.toLowerCase().endsWith('.tiff');
+            if (isTif) {
+                return "placeholder-tif"; // We will handle this string in ImagePreview
+            }
+            return URL.createObjectURL(file);
+        });
 
         setUploadState({
-            file,
+            files: selectedFiles,
             progress: 0,
             status: 'uploading',
-            fileId: null,
-            previewUrl: URL.createObjectURL(file),
+            fileIds: [],
+            previewUrls,
             errorMessage: null
         });
 
+        let uploadedIds = [];
+
         try {
-            // Note: XMLHttpRequest doesn't easily return a cancel function from a promise wrapper 
-            // without extra plumbing. I'll use a simplified version for now.
-            const response = await apiService.uploadWithProgress(
-                API_ENDPOINTS.UPLOAD_IMAGE,
-                file,
-                (progress) => setUploadState(prev => ({ ...prev, progress }))
-            );
+            // Sequential upload logic for massive payloads
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                const baseProgress = (i / selectedFiles.length) * 100;
+
+                const response = await apiService.uploadWithProgress(
+                    API_ENDPOINTS.UPLOAD_IMAGE,
+                    file,
+                    (fileProgress) => {
+                        const aggregateProgress = Math.floor(baseProgress + (fileProgress / selectedFiles.length));
+                        setUploadState(prev => ({ ...prev, progress: aggregateProgress }));
+                    }
+                );
+
+                uploadedIds.push(response.fileId || `FILE-MOCK-${i}`);
+            }
 
             setUploadState(prev => ({
                 ...prev,
                 status: 'success',
-                fileId: response.fileId,
-                previewUrl: response.previewUrl || prev.previewUrl,
+                fileIds: uploadedIds,
                 progress: 100
             }));
 
-            return response.fileId;
+            return uploadedIds;
         } catch (error) {
             setUploadState(prev => ({
                 ...prev,
@@ -76,8 +98,8 @@ const useFileUpload = () => {
     }, []);
 
     const cancelUpload = useCallback(() => {
-        if (cancelRef.current) {
-            cancelRef.current();
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
             setUploadState(prev => ({ ...prev, status: 'idle', progress: 0 }));
         }
     }, []);

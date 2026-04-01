@@ -1,0 +1,376 @@
+.sm-page {
+    padding: 2rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    background-color: #f3f4f6;
+    color: black;
+    min-height: 100vh;
+}
+
+.sm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 8px solid black;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.sm-header h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0;
+    letter-spacing: -0.05em;
+}
+
+.sm-header p {
+    font-size: 0.875rem;
+    font-weight: 900;
+    color: #6b7280;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    letter-spacing: 0.1em;
+}
+
+.sm-breadcrumbs {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+}
+
+.sm-breadcrumbs span.active {
+    border-bottom: 2px solid black;
+    color: black;
+}
+
+.sm-breadcrumbs span {
+    color: #9ca3af;
+}
+
+.sm-btn {
+    border: 4px solid black;
+    background-color: white;
+    color: black;
+    padding: 0.75rem 1.5rem;
+    font-weight: 900;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.1em;
+}
+
+.sm-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+.sm-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.sm-btn-black {
+    background-color: black;
+    color: white;
+    width: 100%;
+    border: 4px solid black;
+    padding: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.sm-btn-black:hover {
+    background-color: #333;
+}
+
+.sm-layout {
+    display: flex;
+    gap: 2rem;
+}
+
+.sm-left {
+    flex: 7;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sm-right {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Card */
+.sm-card {
+    border: 8px solid black;
+    background-color: white;
+    box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.sm-card-header {
+    border-bottom: 4px solid black;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sm-card-header h3 {
+    font-size: 1.25rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sm-icon-placeholder {
+    width: 20px;
+    height: 20px;
+    border: 2px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-color: white;
+}
+
+.sm-card-body {
+    padding: 1.5rem;
+}
+
+.sm-card-body.no-padding {
+    padding: 0;
+}
+
+/* Badges */
+.sm-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    border: 2px solid black;
+    letter-spacing: 0.1em;
+}
+
+.sm-badge.black {
+    background-color: black;
+    color: white;
+}
+
+.sm-badge.gray {
+    background-color: #d1d5db;
+    color: black;
+    border-color: transparent;
+}
+
+.sm-badge.outline {
+    background-color: white;
+    color: black;
+}
+
+.sm-badge.transparent {
+    border: 2px solid #d1d5db;
+    color: #9ca3af;
+    background-color: white;
+}
+
+/* Map Grid Placeholder */
+.sm-map-grid {
+    width: 100%;
+    height: 400px;
+    border: 4px dashed black;
+    background-color: white;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Table */
+.sm-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sm-table td {
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.sm-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Warehouse */
+.sm-warehouse-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: stretch;
+}
+
+.sm-wh-map {
+    flex: 1;
+    min-height: 250px;
+    border: 4px solid black;
+    position: relative;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.sm-wh-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sm-wh-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid black;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.625rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.sm-wh-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.sm-wh-row:last-child {
+    border-bottom: none;
+}
+
+/* Treatment Stack */
+.sm-treatment-item {
+    border: 2px solid black;
+    padding: 1rem;
+    background-color: #f9fafb;
+    margin-bottom: 1rem;
+    box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.sm-treatment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.sm-treatment-cat {
+    background-color: black;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.sm-treatment-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.sm-add-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid black;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.sm-add-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+.sm-add-btn:active {
+    transform: translate(2px, 2px);
+}
+
+/* Scanner Status */
+.sm-scanner-card {
+    border: 4px solid black;
+    background-color: white;
+    padding: 1rem;
+}
+
+.sm-scanner-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.sm-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: black;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+.sm-divider {
+    height: 2px;
+    background-color: black;
+    margin-bottom: 0.5rem;
+}

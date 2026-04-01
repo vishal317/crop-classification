@@ -4,6 +4,7 @@ import MainLayout from './components/layout/MainLayout';
 import CropAnalysisPage from './pages/CropAnalysisPage';
 import AnalysisProgress from './components/analysis/AnalysisProgress';
 import YieldResults from './pages/YieldResults';
+import StressManagementPage from './pages/stress-management/StressManagementPage';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/analysis" element={<MainLayout><CropAnalysisPage /></MainLayout>} />
         <Route path="/analysis/progress/:processId" element={<MainLayout><AnalysisProgress /></MainLayout>} />
         <Route path="/progress" element={<MainLayout><AnalysisProgress /></MainLayout>} />
+        <Route path="/stress-management" element={<MainLayout><StressManagementPage /></MainLayout>} />
         <Route path="/analysis/result/:sectorId" element={<MainLayout><YieldResults /></MainLayout>} />
         <Route path="/result" element={<MainLayout><YieldResults /></MainLayout>} />
       </Routes>

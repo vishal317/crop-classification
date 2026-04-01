@@ -82,3 +82,13 @@ export const STORAGE_KEYS = {
   USER_PREFERENCES: 'userPreferences',
   DETECTION_HISTORY: 'detectionHistory'
 };
+
+// Map Integrations
+export const MAP_INTEGRATIONS = {
+  // Use this URL to configure the ArcGIS embedded web map (Legacy Iframe)
+  ARCGIS_STRESS_MAP_URL: 'https://successivetech.maps.arcgis.com/apps/mapviewer/index.html?webmap=abeba7968fb4479082956374fac1740b&extent=true&home=true&zoom=true&scale=true&search=true&selections=true&legend=true',
+  
+  // Use this Map/Layer ID for the native ArcGIS JS SDK (@arcgis/core)
+  ARCGIS_STRESS_MAP_ID: 'abeba7968fb4479082956374fac1740b',
+  ARCGIS_STRESS_LAYER_ID: 'e9a5d3586d3b4992b387d81928fd64af'
+};

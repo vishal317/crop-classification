@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { LayoutGrid, AlertTriangle, ShoppingCart, Settings } from 'lucide-react';
 import './NavigationSidebar.css';
 
@@ -14,24 +14,24 @@ const NavigationSidebar = ({ isOpen, onClose }) => {
             </div>
 
             <nav className="sidebar-menu">
-                <Link to="/analysis" className="menu-item active">
+                <NavLink to="/analysis" className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}>
                     <span className="menu-icon">
                         <LayoutGrid size={16} strokeWidth={2} />
                     </span>
                     Crop Analysis
-                </Link>
-                <Link to="/progress" className="menu-item">
+                </NavLink>
+                <NavLink to="/stress-management" className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}>
                     <span className="menu-icon">
                         <AlertTriangle size={16} strokeWidth={2} />
                     </span>
                     Stress Mgmt
-                </Link>
-                <Link to="/result" className="menu-item">
+                </NavLink>
+                <NavLink to="/result" className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}>
                     <span className="menu-icon">
                         <ShoppingCart size={16} strokeWidth={2} />
                     </span>
                     Orders
-                </Link>
+                </NavLink>
                 <a href="#" className="menu-item">
                     <span className="menu-icon">
                         <Settings size={16} strokeWidth={2} />

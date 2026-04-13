@@ -48,6 +48,9 @@ const AnalysisProgress = () => {
     // Redirect effect
     useEffect(() => {
         if (progress === 100) {
+            localStorage.setItem('analysisComplete', 'true');
+            window.dispatchEvent(new Event('analysis-complete'));
+            
             const timeout = setTimeout(() => {
                 navigate(`${API_ENDPOINTS.ANALYSIS_RESULT_PATH}/${processId}`);
             }, 2000);

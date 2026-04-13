@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChevronRight, ArrowLeft } from 'lucide-react';
+import { ChevronRight, ArrowLeft, Filter, Download, Activity, Target, Leaf, Map as MapIcon, BarChart3, PieChart as PieChartIcon } from 'lucide-react';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 import MetricCard from '../components/MetricCard';
 import YieldGraph from '../components/YieldGraph';
@@ -8,8 +9,9 @@ import SpatialMap from '../components/SpatialMap';
 import RecommendationCard from '../components/RecommendationCard';
 import { fetchYieldResults, fetchIdentifiedCrops } from '../api/yieldApi';
 import { exportYieldResultsPdf } from '../utils/exportPdf';
-import { PAGE_TITLES, BUTTON_LABELS } from '../constants/strings';
+import { BUTTON_LABELS } from '../constants/strings';
 import { METRIC_LABELS, RECOMMENDATION_LABELS } from '../constants/labels';
+import './YieldResults.css';
 
 const YieldResults = () => {
     let { sectorId } = useParams();
@@ -63,74 +65,227 @@ const YieldResults = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-8 border-black border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <span className="font-black text-xl uppercase italic">IDENTIFYING CROPS...</span>
+            <div className="yr-loading">
+                <div className="yr-loading-content">
+                    <div className="yr-spinner"></div>
+                    <span className="yr-loading-text">IDENTIFYING CROPS...</span>
                 </div>
             </div>
         );
     }
 
-    // Step 1: Show Crop List
+    // Step 1: Show Crop List (Dashboard Redesign)
     if (!selectedCrop) {
+        const cropsArray = cropList ? Object.values(cropList) : [];
+        const totalArea = cropsArray.reduce((acc, curr) => acc + curr.totalArea, 0);
+        const numTypes = cropsArray.length;
+        const dominantCrop = cropsArray.length > 0 ? cropsArray.reduce((prev, current) => (prev.totalArea > current.totalArea) ? prev : current).cropName : "N/A";
+        const healthyPct = 85; // Simulated KPI
+
+        const colorMapping = {
+            "Forest": "#000000",
+            "Developed/Barren": "#404040",
+            "Open Water": "#737373",
+            "Winter Wheat": "#a3a3a3",
+            "Alfalfa": "#d4d4d4",
+        };
+
+        const chartData = cropsArray.map(c => ({
+            name: c.cropName,
+            value: c.totalArea,
+            fill: colorMapping[c.cropName] || "#cbd5e1"
+        })).sort((a,b) => b.value - a.value);
+
         return (
-            <div className="yield-results-container h-full overflow-y-auto bg-[#f9fafb] font-sans">
-                <main className="p-12">
-                    <div className="mb-12">
-                        <div className="flex gap-2 text-[12px] font-black text-gray-400 uppercase mb-4">
-                            <span>ROOT</span>
-                            <span className="text-gray-300">&raquo;</span>
-                            <span>ANALYSIS</span>
-                            <span className="text-gray-300">&raquo;</span>
-                            <span className="text-black">IDENTIFIED CROPS</span>
+            <div className="yr-page-wrapper">
+                {/* Header Section */}
+                <header className="yr-header">
+                    <div>
+                        <div className="yr-breadcrumb">
+                            <span>Project Alpha</span>
+                            <span className="yr-breadcrumb-separator">/</span>
+                            <span>Sector Analysis</span>
                         </div>
-                        <h1 className="text-8xl font-black text-black leading-none uppercase tracking-tighter" style={{ fontSize: '100px', letterSpacing: '-0.07em' }}>
-                            IDENTIFIED CROPS
-                        </h1>
-                        <p className="text-sm font-black text-gray-500 uppercase mt-4">
-                            SELECT A CROP TO VIEW DETAILED ANALYSIS
-                        </p>
-                        {/* Industrial Separator */}
-                        <div className="h-4 bg-black mt-8" />
-                        <div className="h-1 bg-gray-200 mt-2" />
+                        <h1 className="yr-page-title">Crop Classification Dashboard</h1>
+                        <p className="yr-page-subtitle">Real-time geospatial intelligence and area distribution</p>
+                    </div>
+                    <div className="yr-header-actions">
+                        <button className="yr-btn yr-btn-outline">
+                            <Filter size={16} /> Filters
+                        </button>
+                        <button className="yr-btn yr-btn-primary">
+                            <Download size={16} /> Export Report
+                        </button>
+                    </div>
+                </header>
+
+                <main className="yr-main-container">
+                    {/* KPI Summary Cards */}
+                    <div className="yr-kpi-grid">
+                        <div className="yr-kpi-card">
+                            <div className="yr-kpi-icon-wrapper blue">
+                                <MapIcon size={24} />
+                            </div>
+                            <div className="yr-kpi-content">
+                                <p className="yr-kpi-label">Total Analyzed Area</p>
+                                <p className="yr-kpi-value">
+                                    {(totalArea / 1000).toLocaleString(undefined, {maximumFractionDigits: 1})}k
+                                    <span className="yr-kpi-unit">sqm</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div className="yr-kpi-card">
+                            <div className="yr-kpi-icon-wrapper indigo">
+                                <PieChartIcon size={24} />
+                            </div>
+                            <div className="yr-kpi-content">
+                                <p className="yr-kpi-label">Classification Types</p>
+                                <p className="yr-kpi-value">
+                                    {numTypes}
+                                    <span className="yr-kpi-unit">distinct zones</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div className="yr-kpi-card">
+                            <div className="yr-kpi-icon-wrapper emerald">
+                                <Activity size={24} />
+                            </div>
+                            <div className="yr-kpi-content">
+                                <p className="yr-kpi-label">Average Zone Health</p>
+                                <p className="yr-kpi-value">
+                                    {healthyPct}%
+                                    <span className="yr-kpi-trend">↑ 2.4%</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div className="yr-kpi-card">
+                            <div className="yr-kpi-icon-wrapper amber">
+                                <Target size={24} />
+                            </div>
+                            <div className="yr-kpi-content">
+                                <p className="yr-kpi-label">Primary Coverage</p>
+                                <p className="yr-kpi-value">{dominantCrop}</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="crop-list-container" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {cropList && Object.values(cropList).map((crop, index, array) => (
-                            <React.Fragment key={crop.cropName}>
-                                <div
-                                    onClick={() => handleCropSelect(crop.cropName)}
-                                    className="group cursor-pointer transition-all"
-                                    style={{ cursor: 'pointer', padding: '16px 0' }}
-                                >
-                                    <div style={{ marginBottom: '16px' }}>
-                                        <h2 className="text-4xl font-black uppercase leading-[1.1] tracking-tighter" style={{ fontSize: '32px', fontWeight: 900, marginBottom: '4px' }}>{crop.cropName}</h2>
-                                    </div>
+                    {/* Main Split Content */}
+                    <div className="yr-split-grid">
+                        {/* Interactive Spatial Map */}
+                        <div className="yr-map-panel">
+                            <SpatialMap />
+                        </div>
 
-                                    <div className="space-y-3" style={{ marginBottom: '16px' }}>
-                                        <div className="flex justify-between text-xs font-black uppercase" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                            <span style={{ color: '#9ca3af' }}>TOTAL AREA</span>
-                                            <span style={{ color: 'black' }}>{crop.totalArea.toLocaleString()} SQM</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs font-black uppercase" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <span style={{ color: '#9ca3af' }}>ZONE STATUS</span>
-                                            <span style={{ color: '#16a34a' }}>OPTIMAL</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex justify-between items-center" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div className="inline-block px-3 py-1 bg-black text-white text-[10px] font-black uppercase" style={{ backgroundColor: 'black', color: 'white', padding: '4px 12px', fontSize: '10px', fontWeight: 900 }}>
-                                            STATUS: READY
-                                        </div>
-                                        <ChevronRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-                                    </div>
+                        {/* Crop Distribution Panel */}
+                        <div className="yr-distribution-panel">
+                            <div className="yr-card yr-card-flex-1">
+                                <div className="yr-card-header">
+                                    <h3 className="yr-card-title">Area Distribution</h3>
+                                    <BarChart3 color="#000000" size={20} />
                                 </div>
-                                {index < array.length - 1 && (
-                                    <div key={`sep-${index}`} style={{ height: '4px', backgroundColor: 'black', margin: '24px 0' }} />
-                                )}
-                            </React.Fragment>
-                        ))}
+                                <div className="yr-chart-container">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={chartData}
+                                                innerRadius={60}
+                                                outerRadius={90}
+                                                paddingAngle={5}
+                                                dataKey="value"
+                                            >
+                                                {chartData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                                ))}
+                                            </Pie>
+                                            <RechartsTooltip formatter={(value) => `${value.toLocaleString()} sqm`} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                {/* Mini legend for chart */}
+                                <div className="yr-chart-legend">
+                                    {chartData.slice(0, 4).map((c, i) => (
+                                        <div key={i} className="yr-legend-item">
+                                            <div className="yr-legend-color" style={{ backgroundColor: c.fill }}></div>
+                                            <span className="yr-legend-text">{c.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="yr-card">
+                                <div className="yr-card-header">
+                                    <h3 className="yr-card-title" style={{fontSize: '0.875rem', color: '#64748b'}}>Top Categories (sqm)</h3>
+                                </div>
+                                <div className="yr-progress-list">
+                                    {chartData.slice(0, 3).map((crop, idx) => (
+                                        <div key={idx} className="yr-progress-item">
+                                            <div className="yr-progress-header">
+                                                <span className="yr-progress-label">{crop.name}</span>
+                                                <span className="yr-progress-value">{crop.value.toLocaleString()}</span>
+                                            </div>
+                                            <div className="yr-progress-bar-bg">
+                                                <div className="yr-progress-bar-fill" style={{ width: `${(crop.value / chartData[0].value) * 100}%`, backgroundColor: crop.fill }}></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Detailed Crop Table */}
+                    <div className="yr-table-container">
+                        <div className="yr-table-header-row">
+                            <h3 className="yr-table-title">Detailed Classification Report</h3>
+                        </div>
+                        <div className="yr-table-wrapper">
+                            <table className="yr-table">
+                                <thead>
+                                    <tr>
+                                        <th>Crop Name</th>
+                                        <th>Total Area (SQM)</th>
+                                        <th>Area Share</th>
+                                        <th>Zone Status</th>
+                                        <th style={{ textAlign: 'right' }}>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cropsArray.map((crop, idx) => {
+                                        const pct = ((crop.totalArea / totalArea) * 100).toFixed(1);
+                                        const color = colorMapping[crop.cropName] || '#94a3b8';
+                                        return (
+                                            <tr key={idx} className="yr-table-row" onClick={() => handleCropSelect(crop.cropName)}>
+                                                <td>
+                                                    <div className="yr-crop-name-cell">
+                                                        <div className="yr-crop-color-dot" style={{ backgroundColor: color }}></div>
+                                                        <span>{crop.cropName}</span>
+                                                    </div>
+                                                </td>
+                                                <td>{crop.totalArea.toLocaleString()}</td>
+                                                <td>
+                                                    <div className="yr-area-share-container">
+                                                        <span className="yr-area-share-text">{pct}%</span>
+                                                        <div className="yr-progress-bar-bg">
+                                                            <div className="yr-progress-bar-fill" style={{ width: `${pct}%`, backgroundColor: color }}></div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span className="yr-status-badge">
+                                                        <div className="yr-status-dot"></div> Optimal
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button className="yr-action-btn">
+                                                        Analyze <ChevronRight size={16} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </main>
             </div>
@@ -140,10 +295,10 @@ const YieldResults = () => {
     // Step 2: Show Detailed Results for Selected Crop
     if (detailLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-8 border-black border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <span className="font-black text-xl uppercase italic">LOADING {selectedCrop.toUpperCase()} DATA...</span>
+            <div className="yr-loading">
+                <div className="yr-loading-content">
+                    <div className="yr-spinner"></div>
+                    <span className="yr-loading-text">LOADING {selectedCrop.toUpperCase()} DATA...</span>
                 </div>
             </div>
         );
@@ -152,49 +307,43 @@ const YieldResults = () => {
     if (!data) return null;
 
     return (
-        <div className="yield-results-container h-full overflow-y-auto" style={{ height: '100%', overflowY: 'auto', backgroundColor: '#f9fafb', fontFamily: 'sans-serif' }}>
-            <main className="p-12" id="yield-results-content" style={{ padding: '48px' }}>
+        <div className="yr-detail-container">
+            <main className="yr-detail-main" id="yield-results-content">
                 {/* Breadcrumbs & Header */}
-                <div className="mb-12" style={{ marginBottom: '48px' }}>
-                    <div className="flex gap-2 text-[12px] font-black text-gray-400 uppercase mb-4" style={{ display: 'flex', gap: '8px', fontSize: '12px', fontWeight: 900, color: '#9ca3af', textTransform: 'uppercase', marginBottom: '16px' }}>
-                        <button onClick={handleBackToList} className="hover:text-black flex items-center gap-1">
+                <div className="yr-detail-header-wrap">
+                    <div className="yr-breadcrumb" style={{ marginBottom: '1rem' }}>
+                        <button onClick={handleBackToList} style={{ background: 'none', border: 'none', padding: 0, fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#000000', textTransform: 'uppercase' }}>
                             <ArrowLeft size={12} /> BACK TO LIST
                         </button>
-                        <span className="text-gray-300">|</span>
+                        <span className="yr-breadcrumb-separator">|</span>
                         <span>ROOT</span>
-                        <span className="text-gray-300">&raquo;</span>
+                        <span className="yr-breadcrumb-separator">&raquo;</span>
                         <span>ANALYSIS</span>
-                        <span className="text-gray-300">&raquo;</span>
-                        <span className="text-black" style={{ color: 'black' }}>{selectedCrop.toUpperCase()} RESULTS</span>
+                        <span className="yr-breadcrumb-separator">&raquo;</span>
+                        <span style={{ color: '#000000' }}>{selectedCrop.toUpperCase()} RESULTS</span>
                     </div>
 
-                    <div className="flex justify-between items-end" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <div>
-                            <h1 className="text-8xl font-black text-black leading-none uppercase tracking-tighter" style={{ fontSize: '100px', fontWeight: 900, color: 'black', lineHeight: 0.9, textTransform: 'uppercase', letterSpacing: '-0.07em' }}>
-                                {selectedCrop.toUpperCase()}
-                            </h1>
-                            <p className="text-sm font-black text-gray-500 uppercase mt-4" style={{ fontSize: '14px', fontWeight: 900, color: '#6b7280', textTransform: 'uppercase', marginTop: '16px' }}>
+                    <div className="yr-detail-header-flex">
+                        <div className="yr-detail-title-block">
+                            <h1>{selectedCrop.toUpperCase()}</h1>
+                            <p className="yr-detail-subtitle">
                                 SECTOR {data.sectorId} • IDENTIFIED VARIETY • AREA {cropList[selectedCrop]?.totalArea.toLocaleString()} SQM
                             </p>
                         </div>
-                        <div className="flex gap-6 pb-2" style={{ display: 'flex', gap: '24px', paddingBottom: '8px' }}>
-                            <button className="px-10 py-4 border-4 border-black bg-white font-black text-sm hover:bg-gray-50 transition-colors uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]" style={{ padding: '16px 40px', border: '4px solid black', backgroundColor: 'white', fontWeight: 900, fontSize: '14px', textTransform: 'uppercase', boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)' }}>
+                        <div className="yr-detail-actions">
+                            <button className="yr-action-btn-lofi">
                                 {BUTTON_LABELS.SHARE}
                             </button>
-                            <button
-                                onClick={handleExportPdf}
-                                className="px-10 py-4 bg-black text-white font-black text-sm hover:bg-gray-800 transition-colors uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
-                                style={{ padding: '16px 40px', backgroundColor: 'black', color: 'white', fontWeight: 900, fontSize: '14px', textTransform: 'uppercase', boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)', border: 'none', cursor: 'pointer' }}
-                            >
+                            <button onClick={handleExportPdf} className="yr-action-btn-lofi primary">
                                 {BUTTON_LABELS.EXPORT_PDF}
                             </button>
                         </div>
                     </div>
-                    <div className="h-4 bg-black mt-8" style={{ height: '16px', backgroundColor: 'black', marginTop: '32px' }} />
+                    <div className="yr-detail-divider" />
                 </div>
 
                 {/* Metric Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '48px', marginBottom: '48px' }}>
+                <div className="yr-detail-kpi-grid">
                     <MetricCard
                         title={METRIC_LABELS.DETECTED_CROP}
                         value={data.crop}
@@ -225,24 +374,24 @@ const YieldResults = () => {
                 </div>
 
                 {/* Graph & Map Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '48px', marginBottom: '48px' }}>
-                    <div className="lg:col-span-2" style={{ gridColumn: 'span 8' }}>
+                <div className="yr-detail-split-grid">
+                    <div className="yr-detail-graph-wrap">
                         <YieldGraph
                             data={memoizedYieldData}
                             targetThreshold={data.targetThreshold}
                         />
                     </div>
-                    <div className="lg:col-span-1" style={{ gridColumn: 'span 4' }}>
+                    <div className="yr-detail-map-wrap">
                         <SpatialMap />
                     </div>
                 </div>
 
                 {/* Recommendations Section */}
-                <div className="mb-12" style={{ marginTop: '48px' }}>
-                    <h3 className="text-5xl font-black text-black uppercase mb-12 underline decoration-[12px] underline-offset-[16px] decoration-black/10" style={{ fontSize: '48px', fontWeight: 900, textTransform: 'uppercase', marginBottom: '64px', textDecoration: 'underline', textDecorationThickness: '12px', textUnderlineOffset: '16px', textDecorationColor: 'rgba(0,0,0,0.1)', letterSpacing: '-0.07em' }}>
+                <div style={{ marginTop: '3rem' }}>
+                    <h3 className="yr-recommendation-title">
                         {RECOMMENDATION_LABELS.TITLE}
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '48px' }}>
+                    <div className="yr-recommendation-grid">
                         {data.recommendations.map((rec, index) => (
                             <RecommendationCard
                                 key={index}

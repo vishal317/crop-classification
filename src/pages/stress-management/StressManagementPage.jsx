@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './StressManagement.css'; // Import explicit CSS
 import {
     stressZones as mockZones,
@@ -7,6 +8,7 @@ import {
     treatments as mockTreatments,
     scannerStatus as mockScanner
 } from './mockData';
+import { API_ENDPOINTS } from '../../config/apiEndpoints';
 
 import FieldStressMap from './components/FieldStressMap';
 import StressLogs from './components/StressLogs';
@@ -20,13 +22,39 @@ const StressManagementPage = () => {
     const [warehouses, setWarehouses] = useState([]);
     const [treatments, setTreatments] = useState([]);
     const [scanner, setScanner] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (localStorage.getItem('analysisComplete') !== 'true') {
+            navigate('/analysis');
+        }
+    }, [navigate]);
 
     useEffect(() => {
         setZones(mockZones);
-        setLogs(mockLogs);
         setWarehouses(mockWarehouses);
         setTreatments(mockTreatments);
         setScanner(mockScanner);
+
+        // Fetch logs data from ArcGIS REST API
+        fetch(API_ENDPOINTS.ARCGIS_STRESS_LOGS)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.features) {
+                    const mappedLogs = data.features.map(f => ({
+                        id: `STR-${String(f.attributes.Id || f.attributes.OBJECTID).padStart(3, '0')}`,
+                        type: f.attributes.Stress_Type ? f.attributes.Stress_Type.toUpperCase() : 'UNKNOWN',
+                        intensity: f.attributes.Intensity !== undefined ? `${Math.round(f.attributes.Intensity)}%` : 'N/A'
+                    }));
+                    setLogs(mappedLogs);
+                } else {
+                    setLogs(mockLogs);
+                }
+            })
+            .catch(error => {
+                console.error("Failed to fetch stress logs:", error);
+                setLogs(mockLogs); // fallback to mock on offline/error
+            });
     }, []);
 
     return (

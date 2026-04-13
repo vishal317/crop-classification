@@ -57,5 +57,6 @@ export const LABELS = {
     STEP_HEALTH_ASSESSMENT_PENDING: "Pending spectral data...",
     STEP_YIELD_PREDICTION_TITLE: "YIELD PREDICTION",
     STEP_YIELD_PREDICTION_ACTIVE: "Running ML prediction model...",
-    STEP_YIELD_PREDICTION_PENDING: "Waiting for health assessment..."
+    STEP_YIELD_PREDICTION_PENDING: "Waiting for health assessment...",
+    BROWSE_BUTTON: "BROWSE STORAGE"
 };

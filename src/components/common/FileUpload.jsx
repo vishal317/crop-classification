@@ -120,16 +120,17 @@ const FileUpload = ({
                     </div>
                 </div>
 
-                <PrimaryButton
-                    variant="secondary"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        triggerFileInput();
-                    }}
-                    disabled={status === 'uploading'}
-                >
-                    {LABELS.BROWSE_BUTTON}
-                </PrimaryButton>
+                {status !== 'uploading' && (
+                    <PrimaryButton
+                        variant="secondary"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            triggerFileInput();
+                        }}
+                    >
+                        {LABELS.BROWSE_BUTTON}
+                    </PrimaryButton>
+                )}
 
                 {status === 'uploading' && (
                     <div className="progress-container" onClick={(e) => e.stopPropagation()}>
@@ -140,13 +141,7 @@ const FileUpload = ({
                         <div className="progress-bar-bg">
                             <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
                         </div>
-                        <button
-                            type="button"
-                            className="browse-button outline"
-                            onClick={() => fileInputRef.current.click()}
-                        >
-                            BROWSE STORAGE
-                        </button>
+                        {/* Duplicate button removed */}
                     </div>
                 )}
 
